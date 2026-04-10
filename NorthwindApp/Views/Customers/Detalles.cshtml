@@ -1,0 +1,143 @@
+﻿@model NorthwindApp.Models.Customers
+
+@{
+    ViewBag.Title = "Detalles";
+    Layout = "~/Views/Shared/_Main.cshtml";
+    var ordersM = ViewBag.Orders;
+}
+
+<h2>Detalles del Cliente</h2>
+
+<div>
+
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CustomerID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CustomerID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CompanyName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CompanyName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ContactName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactTitle)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ContactTitle)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.City)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.City)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Region)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Region)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PostalCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fax)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fax)
+        </dd>
+        de
+
+    </dl>
+</div>
+
+<h2>Sus Pedidos</h2>
+
+<table class="table">
+    <tr>
+        <th>ID de pedido</th>
+        <th>Fecha del pedido</th>
+        <th>ShipName</th>
+        <th>Dirección de envío</th>
+        <th>Ciudad de envío</th>
+        <th>Código postal</th>
+        <th>País de envío</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in ViewBag.Orders)
+    {
+        <tr>
+            <td>@item.OrderID</td>
+            <td>@item.OrderDate</td>
+            <td>@item.ShipName</td>
+            <td>@item.ShipAddress</td>
+            <td>@item.ShipCity</td>
+            <td>@item.ShipPostalCode</td>
+            <td>@item.ShipCountry</td>
+            <td>
+                <a href="@Url.Action("Detalles","",new {orderId = item.OrderID})" class="btn btn-sm btn-outline-info" title="Ver">
+                    <i class="bi bi-eye"></i>
+                </a>
+            </td>
+        </tr>
+    }
+</table>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
