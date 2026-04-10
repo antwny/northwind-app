@@ -9,6 +9,7 @@ namespace NorthwindApp.Data.Interfaces
 {
     internal interface IOrders : ICRUD<Orders>
     {
-            List<Orders> GetOrdersByCustomerId(string customerId);
+        List<Orders> GetOrdersByCustomerId(string customerId);
+        Orders BuscarPorId(int idpedido);
     }
 }

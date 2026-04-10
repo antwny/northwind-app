@@ -8,10 +8,10 @@
 <h2>Lista de Pedidos</h2>
 <hr />
 
-<form action="~/Controllers/OrdersController" method="post" class="align-items">
+<form action="~/Orders/ListaOrders" method="post" class="align-items">
     <div class="row g-2 justify-content-center">
         <div class="col-md-6">
-            <input type="number" min="0" name="criterio" class="form-control" placeholder="Buscar por ID..." />
+            <input required type="number" min="0" name="orderid" class="form-control" placeholder="Buscar por ID..." />
         </div>
         <div class="col-auto">
             <button class="btn btn-secondary" type="submit">Buscar</button>

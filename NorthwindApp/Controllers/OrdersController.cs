@@ -1,5 +1,6 @@
 ﻿using NorthwindApp.Data;
 using NorthwindApp.Data.Interfaces;
+using NorthwindApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace NorthwindApp.Controllers
         {
             ordersDAO = new OrdersDAO();
         }
-        public ActionResult ListaOrders(int pagina=1)
+        public ActionResult ListaOrders(int pagina = 1)
         {
             int tamanoPagina = 10;
 
@@ -25,6 +26,17 @@ namespace NorthwindApp.Controllers
             ViewBag.TotalRegistros = total;
 
             return View(items);
+        }
+        [HttpPost]
+        public ActionResult ListaOrders(int orderid, int pagina = 1)
+        {
+            var lista = new List<Orders>();
+            lista.Add(ordersDAO.BuscarPorId(orderid));
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = 1;
+            ViewBag.TotalRegistros = 1;
+
+            return View(lista);
         }
         public ActionResult DetallesOrders(int orderId)
         {

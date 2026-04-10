@@ -20,6 +20,36 @@ namespace NorthwindApp.Data.Interfaces
             throw new NotImplementedException();
         }
 
+        public Orders BuscarPorId(int idpedido)
+        {
+            var order = new Orders();
+            using (SqlConnection cn = new SqlConnection(cadenaCnx))
+            {
+                cn.Open();
+                var cmd = new SqlCommand(@"SELECT OrderID, CustomerID, OrderDate, ShipName, ShipAddress, ShipCity, ShipPostalCode, ShipCountry  FROM Orders WHERE OrderID = @OrderID", cn);
+                cmd.Parameters.AddWithValue("@OrderID", idpedido);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        order = new Orders
+                        {
+                            OrderID = reader.GetInt32(0),
+                            Customers = new Customers { CustomerID = reader.GetString(1) },
+                            OrderDate = reader.GetDateTime(2),
+                            ShipName = reader.GetString(3),
+                            ShipAddress = reader.GetString(4),
+                            ShipCity = reader.GetString(5),
+                            ShipPostalCode = reader.GetString(6),
+                            ShipCountry = reader.GetString(7)
+                        };
+
+                    }
+                }
+            }
+            return order;
+        }
+
         public bool Eliminar(int id)
         {
             throw new NotImplementedException();
@@ -61,7 +91,7 @@ namespace NorthwindApp.Data.Interfaces
             {
                 cn.Open();
                 var cmd = new SqlCommand(@"SELECT OrderID, CustomerID, OrderDate, ShipName, ShipAddress, ShipCity, ShipPostalCode, ShipCountry FROM Orders", cn);
-                
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
