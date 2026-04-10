@@ -9,7 +9,7 @@ namespace NorthwindApp.Data.Interfaces
 {
     internal interface ICustomers : ICRUD<Customers>
     {
-        (List<Customers> items, int totalRegistros) ObtenerPaginado(int pagina, int tamanoPagina); 
-        
+        (List<Customers> items, int totalRegistros) ObtenerPaginado(int pagina, int tamanoPagina);
+        (List<Customers> items, int totalRegistros) BuscarPorNombre(string nombre, int pagina, int tamanoPagina);
     }
 }

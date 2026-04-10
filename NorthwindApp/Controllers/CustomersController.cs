@@ -41,6 +41,18 @@ namespace NorthwindApp.Controllers
             return View(customersDAO.BuscarPorId(customerId));
         }
 
-        
+        [HttpPost]
+        public ActionResult Lista(string nombre = "", int pagina = 1)
+        {
+            int tamanoPagina = 10;
+
+            var (items, total) = customersDAO.BuscarPorNombre(nombre,pagina, tamanoPagina);
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / tamanoPagina);
+            ViewBag.TotalRegistros = total;
+
+            return View(items);
+        }
     }
 }

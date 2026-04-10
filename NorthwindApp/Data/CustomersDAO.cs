@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -34,7 +35,7 @@ namespace NorthwindApp.Data
                 var reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                     c = new Customers()
+                    c = new Customers()
                     {
                         CustomerID = reader["CustomerID"].ToString(),
                         CompanyName = reader["CompanyName"].ToString(),
@@ -48,7 +49,7 @@ namespace NorthwindApp.Data
                         Phone = reader["Phone"].ToString(),
                         Fax = reader["Fax"].ToString()
                     };
-                    
+
                 }
             }
             return c;
@@ -139,6 +140,52 @@ namespace NorthwindApp.Data
             return (lista, total);
         }
 
-        
+        public (List<Customers> items, int totalRegistros) BuscarPorNombre(string nombre, int pagina, int tamanoPagina)
+        {
+            var lista = new List<Customers>();
+            int total = 0;
+            int offset = (pagina - 1) * tamanoPagina;
+
+            using (var cnx = new System.Data.SqlClient.SqlConnection(cadenaCnx))
+            {
+                cnx.Open();
+
+                // Contar total de registros
+                SqlCommand cmdCount = new SqlCommand("SELECT COUNT(*) FROM Customers where CompanyName like @nombre", cnx);
+                cmdCount.Parameters.AddWithValue("@nombre", "%" + nombre + "%");
+                total = (int)cmdCount.ExecuteScalar();
+
+                var cmd = new System.Data.SqlClient.SqlCommand(@" SELECT * FROM Customers 
+                       where CompanyName like @nombre
+                       ORDER BY CustomerID
+                       OFFSET @offset ROWS FETCH NEXT @tamano ROWS ONLY", cnx);
+                cmd.Parameters.AddWithValue("@nombre", "%" + nombre + "%");
+                cmd.Parameters.AddWithValue("@offset", offset);
+                cmd.Parameters.AddWithValue("@tamano", tamanoPagina);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var c = new Customers()
+                        {
+                            CustomerID = reader["CustomerID"].ToString(),
+                            CompanyName = reader["CompanyName"].ToString(),
+                            ContactName = reader["ContactName"].ToString(),
+                            ContactTitle = reader["ContactTitle"].ToString(),
+                            Address = reader["Address"].ToString(),
+                            City = reader["City"].ToString(),
+                            Region = reader["Region"].ToString(),
+                            PostalCode = reader["PostalCode"].ToString(),
+                            Country = reader["Country"].ToString(),
+                            Phone = reader["Phone"].ToString(),
+                            Fax = reader["Fax"].ToString()
+                        };
+                        lista.Add(c);
+                    }
+                }
+            }
+            return (lista, total);
         }
     }
+
+}

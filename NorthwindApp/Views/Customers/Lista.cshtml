@@ -6,7 +6,18 @@
 }
 
 <h2>Lista de Clientes</h2>
+<hr />
 
+<form  action="~/Customers/Lista" method="post" class="align-items">
+    <div class="row g-2 justify-content-center">
+        <div class="col-md-6">
+            <input required type="text" name="nombre" class="form-control" placeholder="Buscar por nombre de empresa..." />
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-secondary" type="submit">Buscar</button>
+        </div>
+    </div>
+</form>
 <p>
     @Html.ActionLink("Registrar Nuevo", "Create", null, new { @class = "btn btn-primary" })
 </p>
