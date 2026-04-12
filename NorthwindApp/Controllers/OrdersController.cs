@@ -40,7 +40,10 @@ namespace NorthwindApp.Controllers
         }
         public ActionResult DetallesOrders(int orderId)
         {
-            return View();
+            var order = ordersDAO.BuscarPorId(orderId);
+            var orderDetails = ordersDAO.ObtenerOrderDetails(orderId);
+            ViewBag.OrderDetails = orderDetails;
+            return View(order);
         }
     }
 }

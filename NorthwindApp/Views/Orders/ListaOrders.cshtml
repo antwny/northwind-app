@@ -79,7 +79,7 @@
                 <a href="#" class="btn btn-sm btn-outline-warning" title="Editar">
                     <i class="bi bi-pencil"></i>
                 </a>
-                <a href="#" class="btn btn-sm btn-outline-danger" title="Ver">
+                <a href="#" class="btn btn-sm btn-outline-danger" title="Eliminar">
                     <i class="bi bi-trash"></i>
                 </a>
             </td>
@@ -129,7 +129,7 @@
 
         <!-- Botón "Siguiente" -->
         <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
-            @Html.ActionLink("»", "Lista", new { pagina = paginaActual + 1 }, new { @class = "page-link" })
+            @Html.ActionLink("»", "ListaOrders", new { pagina = paginaActual + 1 }, new { @class = "page-link" })
         </li>
     </ul>
 </nav>

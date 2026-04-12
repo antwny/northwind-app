@@ -96,10 +96,12 @@
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Data\Interfaces\IOrders.cs" />
+    <Compile Include="Data\Interfaces\IProducts.cs" />
     <Compile Include="Data\OrdersDAO.cs" />
     <Compile Include="Data\CustomersDAO.cs" />
     <Compile Include="Data\Interfaces\ICRUD.cs" />
     <Compile Include="Data\Interfaces\ICustomers.cs" />
+    <Compile Include="Data\ProductsDAO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -116,6 +118,7 @@
     <Content Include="Views\Customers\Lista.cshtml" />
     <Content Include="Views\Customers\Detalles.cshtml" />
     <Content Include="Views\Orders\ListaOrders.cshtml" />
+    <Content Include="Views\Orders\DetallesOrders.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

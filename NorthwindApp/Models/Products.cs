@@ -9,5 +9,24 @@ namespace NorthwindApp.Models
     {
         public int ProductID { get; set; }
         public string ProductName { get; set; }
+
+        public Products()
+        {
+            ProductID = 0;
+            ProductName = string.Empty;
+        }
+
+        public Products(int productid)
+        {
+            ProductID = productid;
+
+        }
+
+        public Products(int productid, string productname)
+        {
+            ProductID = productid;
+            ProductName = productname;
+
+        }
     }
 }

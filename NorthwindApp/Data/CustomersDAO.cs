@@ -32,24 +32,26 @@ namespace NorthwindApp.Data
                 cnx.Open();
                 var cmd = new System.Data.SqlClient.SqlCommand("SELECT * FROM Customers where CustomerID = @id", cnx);
                 cmd.Parameters.AddWithValue("@id", id);
-                var reader = cmd.ExecuteReader();
-                if (reader.Read())
+                using (var reader = cmd.ExecuteReader())
                 {
-                    c = new Customers()
+                    if (reader.Read())
                     {
-                        CustomerID = reader["CustomerID"].ToString(),
-                        CompanyName = reader["CompanyName"].ToString(),
-                        ContactName = reader["ContactName"].ToString(),
-                        ContactTitle = reader["ContactTitle"].ToString(),
-                        Address = reader["Address"].ToString(),
-                        City = reader["City"].ToString(),
-                        Region = reader["Region"].ToString(),
-                        PostalCode = reader["PostalCode"].ToString(),
-                        Country = reader["Country"].ToString(),
-                        Phone = reader["Phone"].ToString(),
-                        Fax = reader["Fax"].ToString()
-                    };
+                        c = new Customers()
+                        {
+                            CustomerID = reader["CustomerID"].ToString(),
+                            CompanyName = reader["CompanyName"].ToString(),
+                            ContactName = reader["ContactName"].ToString(),
+                            ContactTitle = reader["ContactTitle"].ToString(),
+                            Address = reader["Address"].ToString(),
+                            City = reader["City"].ToString(),
+                            Region = reader["Region"].ToString(),
+                            PostalCode = reader["PostalCode"].ToString(),
+                            Country = reader["Country"].ToString(),
+                            Phone = reader["Phone"].ToString(),
+                            Fax = reader["Fax"].ToString()
+                        };
 
+                    }
                 }
             }
             return c;
@@ -67,24 +69,26 @@ namespace NorthwindApp.Data
             {
                 cnx.Open();
                 var cmd = new System.Data.SqlClient.SqlCommand("SELECT * FROM Customers", cnx);
-                var reader = cmd.ExecuteReader();
-                while (reader.Read())
+                using (var reader = cmd.ExecuteReader())
                 {
-                    Customers c = new Customers()
+                    while (reader.Read())
                     {
-                        CustomerID = reader["CustomerID"].ToString(),
-                        CompanyName = reader["CompanyName"].ToString(),
-                        ContactName = reader["ContactName"].ToString(),
-                        ContactTitle = reader["ContactTitle"].ToString(),
-                        Address = reader["Address"].ToString(),
-                        City = reader["City"].ToString(),
-                        Region = reader["Region"].ToString(),
-                        PostalCode = reader["PostalCode"].ToString(),
-                        Country = reader["Country"].ToString(),
-                        Phone = reader["Phone"].ToString(),
-                        Fax = reader["Fax"].ToString()
-                    };
-                    lista.Add(c);
+                        Customers c = new Customers()
+                        {
+                            CustomerID = reader["CustomerID"].ToString(),
+                            CompanyName = reader["CompanyName"].ToString(),
+                            ContactName = reader["ContactName"].ToString(),
+                            ContactTitle = reader["ContactTitle"].ToString(),
+                            Address = reader["Address"].ToString(),
+                            City = reader["City"].ToString(),
+                            Region = reader["Region"].ToString(),
+                            PostalCode = reader["PostalCode"].ToString(),
+                            Country = reader["Country"].ToString(),
+                            Phone = reader["Phone"].ToString(),
+                            Fax = reader["Fax"].ToString()
+                        };
+                        lista.Add(c);
+                    }
                 }
             }
             return lista;
@@ -118,23 +122,25 @@ namespace NorthwindApp.Data
                 cmd.Parameters.AddWithValue("@offset", offset);
                 cmd.Parameters.AddWithValue("@tamano", tamanoPagina);
 
-                var reader = cmd.ExecuteReader();
-                while (reader.Read())
+                using (var reader = cmd.ExecuteReader())
                 {
-                    lista.Add(new Customers
+                    while (reader.Read())
                     {
-                        CustomerID = reader["CustomerID"].ToString(),
-                        CompanyName = reader["CompanyName"].ToString(),
-                        ContactName = reader["ContactName"].ToString(),
-                        ContactTitle = reader["ContactTitle"].ToString(),
-                        Address = reader["Address"].ToString(),
-                        City = reader["City"].ToString(),
-                        Region = reader["Region"].ToString(),
-                        PostalCode = reader["PostalCode"].ToString(),
-                        Country = reader["Country"].ToString(),
-                        Phone = reader["Phone"].ToString(),
-                        Fax = reader["Fax"].ToString()
-                    });
+                        lista.Add(new Customers
+                        {
+                            CustomerID = reader["CustomerID"].ToString(),
+                            CompanyName = reader["CompanyName"].ToString(),
+                            ContactName = reader["ContactName"].ToString(),
+                            ContactTitle = reader["ContactTitle"].ToString(),
+                            Address = reader["Address"].ToString(),
+                            City = reader["City"].ToString(),
+                            Region = reader["Region"].ToString(),
+                            PostalCode = reader["PostalCode"].ToString(),
+                            Country = reader["Country"].ToString(),
+                            Phone = reader["Phone"].ToString(),
+                            Fax = reader["Fax"].ToString()
+                        });
+                    }
                 }
             }
             return (lista, total);
