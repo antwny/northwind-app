@@ -1,6 +1,4 @@
-﻿using NorthwindApp.Data.Interfaces;
-using NorthwindApp.Models;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,16 +7,20 @@ using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
+using NorthwindApp.Data.Interfaces;
+using NorthwindApp.Models;
 
 namespace NorthwindApp.Data
 {
     public class CustomersDAO : ICustomers
     {
         private string cadenaCnx;
+
         public CustomersDAO()
         {
             cadenaCnx = ConfigurationManager.ConnectionStrings["NorthwindContext"].ConnectionString;
         }
+
         public bool Actualizar(Customers entity)
         {
             throw new NotImplementedException();
@@ -26,35 +28,48 @@ namespace NorthwindApp.Data
 
         public Customers BuscarPorId(string id)
         {
-            Customers c = null;
-            using (var cnx = new System.Data.SqlClient.SqlConnection(cadenaCnx))
+            try
             {
-                cnx.Open();
-                var cmd = new System.Data.SqlClient.SqlCommand("SELECT * FROM Customers where CustomerID = @id", cnx);
-                cmd.Parameters.AddWithValue("@id", id);
-                using (var reader = cmd.ExecuteReader())
+                Customers c = null;
+                using (var cnx = new System.Data.SqlClient.SqlConnection(cadenaCnx))
                 {
-                    if (reader.Read())
+                    cnx.Open();
+                    using (
+                        var cmd = new SqlCommand(
+                            "SELECT * FROM Customers where CustomerID = @id",
+                            cnx
+                        )
+                    )
                     {
-                        c = new Customers()
+                        cmd.Parameters.AddWithValue("@id", id);
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            CustomerID = reader["CustomerID"].ToString(),
-                            CompanyName = reader["CompanyName"].ToString(),
-                            ContactName = reader["ContactName"].ToString(),
-                            ContactTitle = reader["ContactTitle"].ToString(),
-                            Address = reader["Address"].ToString(),
-                            City = reader["City"].ToString(),
-                            Region = reader["Region"].ToString(),
-                            PostalCode = reader["PostalCode"].ToString(),
-                            Country = reader["Country"].ToString(),
-                            Phone = reader["Phone"].ToString(),
-                            Fax = reader["Fax"].ToString()
-                        };
-
+                            if (reader.Read())
+                            {
+                                c = new Customers()
+                                {
+                                    CustomerID = reader["CustomerID"].ToString(),
+                                    CompanyName = reader["CompanyName"].ToString(),
+                                    ContactName = reader["ContactName"].ToString(),
+                                    ContactTitle = reader["ContactTitle"].ToString(),
+                                    Address = reader["Address"].ToString(),
+                                    City = reader["City"].ToString(),
+                                    Region = reader["Region"].ToString(),
+                                    PostalCode = reader["PostalCode"].ToString(),
+                                    Country = reader["Country"].ToString(),
+                                    Phone = reader["Phone"].ToString(),
+                                    Fax = reader["Fax"].ToString(),
+                                };
+                            }
+                        }
                     }
                 }
+                return c;
             }
-            return c;
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al obtener datos: " + ex.Message, ex);
+            }
         }
 
         public bool Eliminar(int id)
@@ -64,35 +79,43 @@ namespace NorthwindApp.Data
 
         public List<Customers> ListarTodo()
         {
-            List<Customers> lista = new List<Customers>();
-            using (var cnx = new System.Data.SqlClient.SqlConnection(cadenaCnx))
+            try
             {
-                cnx.Open();
-                var cmd = new System.Data.SqlClient.SqlCommand("SELECT * FROM Customers", cnx);
-                using (var reader = cmd.ExecuteReader())
+                List<Customers> lista = new List<Customers>();
+                using (var cnx = new SqlConnection(cadenaCnx))
                 {
-                    while (reader.Read())
+                    cnx.Open();
+                    using (var cmd = new SqlCommand("SELECT * FROM Customers", cnx))
                     {
-                        Customers c = new Customers()
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            CustomerID = reader["CustomerID"].ToString(),
-                            CompanyName = reader["CompanyName"].ToString(),
-                            ContactName = reader["ContactName"].ToString(),
-                            ContactTitle = reader["ContactTitle"].ToString(),
-                            Address = reader["Address"].ToString(),
-                            City = reader["City"].ToString(),
-                            Region = reader["Region"].ToString(),
-                            PostalCode = reader["PostalCode"].ToString(),
-                            Country = reader["Country"].ToString(),
-                            Phone = reader["Phone"].ToString(),
-                            Fax = reader["Fax"].ToString()
-                        };
-                        lista.Add(c);
+                            while (reader.Read())
+                            {
+                                Customers c = new Customers()
+                                {
+                                    CustomerID = reader["CustomerID"].ToString(),
+                                    CompanyName = reader["CompanyName"].ToString(),
+                                    ContactName = reader["ContactName"].ToString(),
+                                    ContactTitle = reader["ContactTitle"].ToString(),
+                                    Address = reader["Address"].ToString(),
+                                    City = reader["City"].ToString(),
+                                    Region = reader["Region"].ToString(),
+                                    PostalCode = reader["PostalCode"].ToString(),
+                                    Country = reader["Country"].ToString(),
+                                    Phone = reader["Phone"].ToString(),
+                                    Fax = reader["Fax"].ToString(),
+                                };
+                                lista.Add(c);
+                            }
+                        }
                     }
                 }
+                return lista;
             }
-            return lista;
-
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al obtener datos: " + ex.Message, ex);
+            }
         }
 
         public bool Registrar(Customers entity)
@@ -100,98 +123,140 @@ namespace NorthwindApp.Data
             throw new NotImplementedException();
         }
 
-        public (List<Customers> items, int totalRegistros) ObtenerPaginado(int pagina, int tamanoPagina)
+        public (List<Customers> items, int totalRegistros) ObtenerPaginado(
+            int pagina,
+            int tamanoPagina
+        )
         {
-            var lista = new List<Customers>();
-            int total = 0;
-            int offset = (pagina - 1) * tamanoPagina;
-
-            using (SqlConnection con = new SqlConnection(cadenaCnx))
+            try
             {
-                con.Open();
+                var lista = new List<Customers>();
+                int total = 0;
+                int offset = (pagina - 1) * tamanoPagina;
 
-                // Contar total de registros
-                SqlCommand cmdCount = new SqlCommand("SELECT COUNT(*) FROM Customers", con);
-                total = (int)cmdCount.ExecuteScalar();
+                using (SqlConnection con = new SqlConnection(cadenaCnx))
+                {
+                    con.Open();
 
-                // Obtener página
-                string sql = @"SELECT * FROM Customers ORDER BY CustomerID
+                    // Contar total de registros
+                    using (
+                        SqlCommand cmdCount = new SqlCommand("SELECT COUNT(*) FROM Customers", con)
+                    )
+                    {
+                        total = (int)cmdCount.ExecuteScalar();
+                    }
+                    // Obtener página
+                    string sql =
+                        @"SELECT * FROM Customers ORDER BY CustomerID
                        OFFSET @offset ROWS FETCH NEXT @tamano ROWS ONLY";
 
-                SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@offset", offset);
-                cmd.Parameters.AddWithValue("@tamano", tamanoPagina);
-
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
-                        lista.Add(new Customers
+                        cmd.Parameters.AddWithValue("@offset", offset);
+                        cmd.Parameters.AddWithValue("@tamano", tamanoPagina);
+
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            CustomerID = reader["CustomerID"].ToString(),
-                            CompanyName = reader["CompanyName"].ToString(),
-                            ContactName = reader["ContactName"].ToString(),
-                            ContactTitle = reader["ContactTitle"].ToString(),
-                            Address = reader["Address"].ToString(),
-                            City = reader["City"].ToString(),
-                            Region = reader["Region"].ToString(),
-                            PostalCode = reader["PostalCode"].ToString(),
-                            Country = reader["Country"].ToString(),
-                            Phone = reader["Phone"].ToString(),
-                            Fax = reader["Fax"].ToString()
-                        });
+                            while (reader.Read())
+                            {
+                                lista.Add(
+                                    new Customers
+                                    {
+                                        CustomerID = reader["CustomerID"].ToString(),
+                                        CompanyName = reader["CompanyName"].ToString(),
+                                        ContactName = reader["ContactName"].ToString(),
+                                        ContactTitle = reader["ContactTitle"].ToString(),
+                                        Address = reader["Address"].ToString(),
+                                        City = reader["City"].ToString(),
+                                        Region = reader["Region"].ToString(),
+                                        PostalCode = reader["PostalCode"].ToString(),
+                                        Country = reader["Country"].ToString(),
+                                        Phone = reader["Phone"].ToString(),
+                                        Fax = reader["Fax"].ToString(),
+                                    }
+                                );
+                            }
+                        }
                     }
                 }
+                return (lista, total);
             }
-            return (lista, total);
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al obtener datos: " + ex.Message, ex);
+            }
         }
 
-        public (List<Customers> items, int totalRegistros) BuscarPorNombre(string nombre, int pagina, int tamanoPagina)
+        public (List<Customers> items, int totalRegistros) BuscarPorNombre(
+            string nombre,
+            int pagina,
+            int tamanoPagina
+        )
         {
-            var lista = new List<Customers>();
-            int total = 0;
-            int offset = (pagina - 1) * tamanoPagina;
-
-            using (var cnx = new System.Data.SqlClient.SqlConnection(cadenaCnx))
+            try
             {
-                cnx.Open();
+                var lista = new List<Customers>();
+                int total = 0;
+                int offset = (pagina - 1) * tamanoPagina;
 
-                // Contar total de registros
-                SqlCommand cmdCount = new SqlCommand("SELECT COUNT(*) FROM Customers where CompanyName like @nombre", cnx);
-                cmdCount.Parameters.AddWithValue("@nombre", "%" + nombre + "%");
-                total = (int)cmdCount.ExecuteScalar();
+                using (var cnx = new SqlConnection(cadenaCnx))
+                {
+                    cnx.Open();
 
-                var cmd = new System.Data.SqlClient.SqlCommand(@" SELECT * FROM Customers 
+                    // Contar total de registros
+                    using (
+                        SqlCommand cmdCount = new SqlCommand(
+                            "SELECT COUNT(*) FROM Customers where CompanyName like @nombre",
+                            cnx
+                        )
+                    )
+                    {
+                        cmdCount.Parameters.AddWithValue("@nombre", "%" + nombre + "%");
+                        total = (int)cmdCount.ExecuteScalar();
+                    }
+
+                    using (
+                        var cmd = new SqlCommand(
+                            @" SELECT * FROM Customers 
                        where CompanyName like @nombre
                        ORDER BY CustomerID
-                       OFFSET @offset ROWS FETCH NEXT @tamano ROWS ONLY", cnx);
-                cmd.Parameters.AddWithValue("@nombre", "%" + nombre + "%");
-                cmd.Parameters.AddWithValue("@offset", offset);
-                cmd.Parameters.AddWithValue("@tamano", tamanoPagina);
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
+                       OFFSET @offset ROWS FETCH NEXT @tamano ROWS ONLY",
+                            cnx
+                        )
+                    )
                     {
-                        var c = new Customers()
+                        cmd.Parameters.AddWithValue("@nombre", "%" + nombre + "%");
+                        cmd.Parameters.AddWithValue("@offset", offset);
+                        cmd.Parameters.AddWithValue("@tamano", tamanoPagina);
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            CustomerID = reader["CustomerID"].ToString(),
-                            CompanyName = reader["CompanyName"].ToString(),
-                            ContactName = reader["ContactName"].ToString(),
-                            ContactTitle = reader["ContactTitle"].ToString(),
-                            Address = reader["Address"].ToString(),
-                            City = reader["City"].ToString(),
-                            Region = reader["Region"].ToString(),
-                            PostalCode = reader["PostalCode"].ToString(),
-                            Country = reader["Country"].ToString(),
-                            Phone = reader["Phone"].ToString(),
-                            Fax = reader["Fax"].ToString()
-                        };
-                        lista.Add(c);
+                            while (reader.Read())
+                            {
+                                var c = new Customers()
+                                {
+                                    CustomerID = reader["CustomerID"].ToString(),
+                                    CompanyName = reader["CompanyName"].ToString(),
+                                    ContactName = reader["ContactName"].ToString(),
+                                    ContactTitle = reader["ContactTitle"].ToString(),
+                                    Address = reader["Address"].ToString(),
+                                    City = reader["City"].ToString(),
+                                    Region = reader["Region"].ToString(),
+                                    PostalCode = reader["PostalCode"].ToString(),
+                                    Country = reader["Country"].ToString(),
+                                    Phone = reader["Phone"].ToString(),
+                                    Fax = reader["Fax"].ToString(),
+                                };
+                                lista.Add(c);
+                            }
+                        }
                     }
                 }
+                return (lista, total);
             }
-            return (lista, total);
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al buscar por nombre: " + ex.Message, ex);
+            }
         }
     }
-
 }
