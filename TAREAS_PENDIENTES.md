@@ -6,148 +6,179 @@
 - **Estado**: ⚠️ En Desarrollo (Necesita Estabilización)
 - **Prioridad General**: 🔴 ALTA
 
+# 📋 LISTA DE PENDIENTES - NorthwindApp
+
+## Estado General del Proyecto
+- **Versión**: 1.0 (Mejorado)
+- **Última Actualización**: 2024
+- **Estado**: ✅ Estabilizado - Mejoras Críticas Completadas
+- **Prioridad General**: 🟡 MEDIA (En mantenimiento)
+
 ---
 
-## 🔴 CRÍTICO - Debe hacerse AHORA
+## ✅ COMPLETADO - Problemas Críticos Resueltos
 
-### 1. Validación de Valores NULL
-- **Archivo**: `Data/OrdersDAO.cs`
-- **Línea aprox**: Método `Obtener()` o `ListarTodo()`
-- **Problema**: `reader.GetString()` falla si el valor es NULL
-- **Solución**: 
+### 1. ✅ Validación de Valores NULL - RESUELTO
+- **Archivo**: `Data/OrdersDAO.cs`, `Data/CustomersDAO.cs`
+- **Estado**: ✅ COMPLETADO
+- **Solución implementada**: 
   ```csharp
   ShipAddress = reader.IsDBNull(4) ? null : reader.GetString(4),
   ```
-- **Esfuerzo**: 30 minutos
-- **Estado**: ⏳ No Iniciado
-- **Asignado a**: [@antwny](https://github.com/antwny)
+- **Verificado en**: Métodos BuscarPorId(), GetOrdersByCustomerId()
 
 ---
 
-### 2. Manejo Global de Excepciones
-- **Ubicación**: Todos los métodos DAO
-- **Problema**: Sin try-catch, errores técnicos expuestos al usuario
-- **Solución**: Agregar try-catch y logging
-- **Esfuerzo**: 1-2 horas
-- **Estado**: ⏳ No Iniciado
-- **Prioridad**: 🔴 CRÍTICA
-
-Ejemplo:
-```csharp
-public List<Orders> Obtener()
-{
-    try
-    {
-        using (SqlConnection conexion = new SqlConnection(cadenaConexion))
-        {
-            // código
-        }
-    }
-    catch (Exception ex)
-    {
-        // Log error
-        throw;
-    }
-}
-```
-
----
-
-### 3. Liberar Recursos de BD
-- **Ubicación**: Todos los DAOs
-- **Problema**: SqlConnection y SqlDataReader no se cierran
-- **Solución**: Usar `using` statements
-- **Esfuerzo**: 2-3 horas
-- **Estado**: ⏳ No Iniciado
-- **Prioridad**: 🔴 CRÍTICA
-
-Patrón correcto:
-```csharp
-using (SqlConnection conexion = new SqlConnection(cadenaConexion))
-using (SqlCommand cmd = new SqlCommand(sql, conexion))
-using (SqlDataReader reader = cmd.ExecuteReader())
-{
-    // código
-}
-```
-
----
-
-### 4. Corregir Enlaces de Paginación
-- **Archivo**: `Views/Orders/ListaOrders.cshtml`
-- **Problema**: ActionLink apunta a "Lista" en lugar de "ListaOrders"
-- **Solución**:
+### 2. ✅ Manejo de Excepciones - RESUELTO
+- **Ubicación**: Todos los métodos DAO críticos
+- **Estado**: ✅ COMPLETADO
+- **Patrón implementado**:
   ```csharp
-  @Html.ActionLink("»", "ListaOrders", new { pagina = paginaActual + 1 })
+  try
+  {
+      using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+      {
+          // código
+      }
+  }
+  catch (SqlException ex)
+  {
+      throw new ApplicationException("Error al obtener datos", ex);
+  }
   ```
-- **Esfuerzo**: 15 minutos
-- **Estado**: ⏳ No Iniciado
-- **Prioridad**: 🔴 CRÍTICA
+
+---
+
+### 3. ✅ Liberar Recursos de BD - RESUELTO
+- **Ubicación**: Todos los DAOs
+- **Estado**: ✅ COMPLETADO
+- **Patrón implementado**:
+  ```csharp
+  using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+  using (SqlCommand cmd = new SqlCommand(sql, conexion))
+  using (SqlDataReader reader = cmd.ExecuteReader())
+  {
+      // código
+  }
+  ```
+
+---
+
+### 4. ✅ Paginación Funcional - RESUELTO
+- **Archivo**: `Data/OrdersDAO.cs` - Método `ObtenerPaginado()`
+- **Estado**: ✅ COMPLETADO
+- **Implementación**: OFFSET/FETCH NEXT con parámetros seguros
 
 ---
 
 ## 🟡 ALTO - Debe hacerse esta semana
 
 ### 5. Implementar Métodos CRUD - Registrar
-- **Archivo**: `Data/OrdersDAO.cs`
-- **Método**: `Registrar(Orders obj)`
+- **Archivo**: `Data/OrdersDAO.cs`, `Data/CustomersDAO.cs`
+- **Método**: `Registrar(T entity)`
 - **Tipo**: INSERT
-- **Esfuerzo**: 1-2 horas
+- **Esfuerzo**: 2-3 horas
 - **Estado**: ⏳ No Iniciado
-- **Descripción**: Permitir crear nuevos pedidos
+- **Descripción**: Permitir crear nuevos pedidos/clientes
 
 Pasos:
-1. [ ] Crear método en interfaz `IOrders`
-2. [ ] Implementar en `OrdersDAO`
-3. [ ] Crear acción en `OrdersController` (GET para formulario)
-4. [ ] Crear acción (POST) para guardar
+1. [ ] Crear método en interfaz `IOrders` / `ICustomers`
+2. [ ] Implementar en DAO correspondiente
+3. [ ] Crear acción GET en Controller (formulario)
+4. [ ] Crear acción POST (guardar datos)
 5. [ ] Crear vista `Create.cshtml`
-6. [ ] Validar datos de entrada
+6. [ ] Agregar validación de datos
+
+Ejemplo:
+```csharp
+public bool Registrar(Orders entity)
+{
+    try
+    {
+        using (SqlConnection cn = new SqlConnection(cadenaCnx))
+        {
+            cn.Open();
+            using (var cmd = new SqlCommand(
+                @"INSERT INTO Orders (CustomerID, OrderDate, ShipName, ShipAddress, ShipCity) 
+                  VALUES (@CustomerID, @OrderDate, @ShipName, @ShipAddress, @ShipCity)", cn))
+            {
+                cmd.Parameters.AddWithValue("@CustomerID", entity.Customers.CustomerID);
+                cmd.Parameters.AddWithValue("@OrderDate", entity.OrderDate ?? DateTime.Now);
+                cmd.Parameters.AddWithValue("@ShipName", entity.ShipName ?? (object)DBNull.Value);
+                // ... más parámetros
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+    }
+    catch (SqlException ex)
+    {
+        throw new ApplicationException("Error al registrar", ex);
+    }
+}
+```
 
 ---
 
 ### 6. Implementar Métodos CRUD - Actualizar
-- **Archivo**: `Data/OrdersDAO.cs`
-- **Método**: `Actualizar(Orders obj)`
+- **Archivo**: `Data/OrdersDAO.cs`, `Data/CustomersDAO.cs`
+- **Método**: `Actualizar(T entity)`
 - **Tipo**: UPDATE
-- **Esfuerzo**: 1-2 horas
+- **Esfuerzo**: 2-3 horas
 - **Estado**: ⏳ No Iniciado
-- **Descripción**: Permitir editar pedidos existentes
 
 Pasos:
-1. [ ] Crear método en interfaz `IOrders`
-2. [ ] Implementar en `OrdersDAO`
-3. [ ] Crear acción GET `Edit(int id)` en Controller
-4. [ ] Crear acción POST `Edit(Orders obj)` en Controller
-5. [ ] Crear vista `Edit.cshtml`
+1. [ ] Implementar en DAO
+2. [ ] Crear acción GET `Edit(int id)` en Controller
+3. [ ] Crear acción POST `Edit(T entity)` en Controller
+4. [ ] Crear vista `Edit.cshtml`
+5. [ ] Agregar validación
 
 ---
 
 ### 7. Implementar Métodos CRUD - Eliminar
-- **Archivo**: `Data/OrdersDAO.cs`
+- **Archivo**: `Data/OrdersDAO.cs`, `Data/CustomersDAO.cs`
 - **Método**: `Eliminar(int id)`
 - **Tipo**: DELETE
-- **Esfuerzo**: 1 hora
+- **Esfuerzo**: 1-2 horas
 - **Estado**: ⏳ No Iniciado
-- **Descripción**: Permitir eliminar pedidos
 
 Pasos:
-1. [ ] Crear método en interfaz `IOrders`
-2. [ ] Implementar en `OrdersDAO`
-3. [ ] Agregar botón Eliminar en vista
-4. [ ] Crear confirmación de eliminación
+1. [ ] Implementar en DAO
+2. [ ] Agregar botón Eliminar en vista
+3. [ ] Crear confirmación de eliminación
+4. [ ] Manejar restricciones de clave foránea
 
 ---
 
 ### 8. Agregar Logging Básico
-- **Ubicación**: Global
-- **Opción 1**: Usar `System.Diagnostics.EventLog`
-- **Opción 2**: Crear logger simple en archivo
-- **Esfuerzo**: 1-2 horas
+- **Ubicación**: Global o por módulo
+- **Opción 1**: Crear clase Logger simple
+- **Opción 2**: Usar NLog (necesita instalación)
+- **Esfuerzo**: 2-3 horas
 - **Estado**: ⏳ No Iniciado
 
+Estructura propuesta:
 ```csharp
-// Logger simple
+public static class Logger
+{
+    private static string logPath = AppDomain.CurrentDomain.BaseDirectory + "Logs/";
+
+    public static void LogError(string message, Exception ex = null)
+    {
+        try
+        {
+            if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
+            string logFile = Path.Combine(logPath, $"error_{DateTime.Now:yyyy-MM-dd}.log");
+            File.AppendAllText(logFile, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}{Environment.NewLine}");
+        }
+        catch { } // Evitar que falle el logging
+    }
+}
+```
+
+---
+
+## 🟢 MEDIA - Próximas mejoras
 public static class Logger
 {
     public static void LogError(string message, Exception ex)

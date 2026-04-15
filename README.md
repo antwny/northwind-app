@@ -5,11 +5,13 @@ Una aplicación **ASP.NET MVC** desarrollada con **.NET Framework 4.8** para la 
 ## 📋 Descripción del Proyecto
 
 NorthwindApp es una aplicación web empresarial que permite:
-- 📦 Gestionar **pedidos** (Orders) con búsqueda y paginación
-- 👥 Administrar **clientes** (Customers)
-- 📊 Visualizar detalles de pedidos y envíos
-- 🔍 Buscar pedidos por ID
-- 📄 Navegar entre páginas de resultados
+- 📦 Gestionar **pedidos** (Orders) con búsqueda, filtrado y paginación
+- 👥 Administrar **clientes** (Customers) con búsqueda avanzada
+- 📊 Visualizar detalles completos de pedidos y detalles de envío
+- 🔍 Buscar pedidos por ID con resultados precisos
+- 📄 Navegar entre páginas de resultados con paginación funcional
+- 🛡️ Manejo robusto de excepciones y validación de datos NULL
+- ⚡ Operaciones optimizadas con uso correcto de recursos
 
 ## 🛠️ Stack Tecnológico
 

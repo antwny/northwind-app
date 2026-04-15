@@ -72,19 +72,19 @@ GET  /Customers/Detalles?id=ALFKI     Detalles de cliente
 ```
 Tu Solicitud (Browser)
         ↓
-    Controller (recibe la solicitud)
+    Controller (recibe la solicitud, valida)
         ↓
-    DAO (obtiene datos de la BD)
+    DAO (obtiene datos de la BD con validación NULL)
         ↓
-    Database (Northwind)
+    Database (Northwind SQL Server)
         ↓
-    DAO (retorna resultados)
+    DAO (retorna resultados validados)
         ↓
-    Controller (prepara la vista)
+    Controller (prepara la vista, ViewBag)
         ↓
-    View (Razor) (muestra HTML)
+    View (Razor) (renderiza HTML Bootstrap)
         ↓
-    Browser (muestra la página)
+    Browser (muestra la página responsive)
 ```
 
 ---
@@ -104,6 +104,9 @@ Tu Solicitud (Browser)
 
 ### ❌ Puerto ya está en uso
 **Solución**: En `Properties` → Web → Cambiar puerto local
+
+### ✅ Errores de NULL ya resueltos
+**Nota**: IsDBNull() está implementado en todos los lectores SQL
 
 ---
 
