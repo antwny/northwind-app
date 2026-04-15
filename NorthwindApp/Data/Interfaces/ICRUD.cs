@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace NorthwindApp.Data.Interfaces
 {
-    internal interface ICRUD <T>
+    internal interface ICRUD<T>
     {
         bool Registrar(T entity);
         List<T> ListarTodo();
         bool Actualizar(T entity);
-        bool Eliminar(int id);
-        
     }
 }

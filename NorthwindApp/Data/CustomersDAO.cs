@@ -72,9 +72,29 @@ namespace NorthwindApp.Data
             }
         }
 
-        public bool Eliminar(int id)
+        public bool Eliminar(string id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var cnx = new SqlConnection(cadenaCnx))
+                {
+                    cnx.Open();
+                    using (
+                        var cmd = new SqlCommand(
+                            "delete from Customers where CustomerID like @ID",
+                            cnx
+                        )
+                    )
+                    {
+                        cmd.Parameters.AddWithValue("@ID", id);
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al eliminar datos: " + ex.Message, ex);
+            }
         }
 
         public List<Customers> ListarTodo()
@@ -120,7 +140,39 @@ namespace NorthwindApp.Data
 
         public bool Registrar(Customers entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool ok = false;
+                using (var cnx = new SqlConnection(cadenaCnx))
+                {
+                    cnx.Open();
+                    string sql =
+                        @"INSERT INTO Customers (CustomerID, CompanyName, ContactName, ContactTitle, Address, City, Region, PostalCode, Country, Phone, Fax)
+                        VALUES (@CustomerID, @CompanyName, @ContactName, @ContactTitle, @Address, @City, @Region, @PostalCode, @Country, @Phone, @Fax)";
+
+                    using (var cmd = new SqlCommand(sql, cnx))
+                    {
+                        cmd.Parameters.AddWithValue("@CustomerID", entity.CustomerID);
+                        cmd.Parameters.AddWithValue("@CompanyName", entity.CompanyName);
+                        cmd.Parameters.AddWithValue("@ContactName", entity.ContactName);
+                        cmd.Parameters.AddWithValue("@ContactTitle", entity.ContactTitle);
+                        cmd.Parameters.AddWithValue("@Address", entity.Address);
+                        cmd.Parameters.AddWithValue("@City", entity.City);
+                        cmd.Parameters.AddWithValue("@Region", entity.Region);
+                        cmd.Parameters.AddWithValue("@PostalCode", entity.PostalCode);
+                        cmd.Parameters.AddWithValue("@Country", entity.Country);
+                        cmd.Parameters.AddWithValue("@Phone", entity.Phone);
+                        cmd.Parameters.AddWithValue("@Fax", entity.Fax);
+
+                        ok = cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+                return ok;
+            }
+            catch (SqlException ex)
+            {
+                throw new ApplicationException("Error al registrar datos: " + ex.Message, ex);
+            }
         }
 
         public (List<Customers> items, int totalRegistros) ObtenerPaginado(

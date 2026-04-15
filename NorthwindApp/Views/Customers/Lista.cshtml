@@ -19,7 +19,7 @@
     </div>
 </form>
 <p>
-    @Html.ActionLink("Registrar Nuevo", "Create", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Registrar Nuevo", "Registrar", null, new { @class = "btn btn-primary" })
 </p>
 <table class="table">
     <tr>
@@ -98,7 +98,7 @@
                 <a href="#" class="btn btn-sm btn-outline-warning" title="Editar">
                     <i class="bi bi-pencil"></i>
                 </a>
-                <a href="#" class="btn btn-sm btn-outline-danger" title="Ver">
+                <a href="@Url.Action("Eliminar","Customers",new {customerId = item.CustomerID})" class="btn btn-sm btn-outline-danger" title="Eliminar">
                     <i class="bi bi-trash"></i>
                 </a>
             </td>
@@ -156,3 +156,17 @@
 
 <p class="text-center text-muted">Total: @ViewBag.TotalRegistros registros</p>
 
+@if (TempData["Ok"] != null)
+{
+    bool resultado = (bool)TempData["Ok"];
+    string titulo = (string)TempData["Titulo"];
+    string mensaje = (string)TempData["Mensaje"];
+
+    <script type="text/javascript">
+    Swal.fire({
+        title: "@titulo",
+        text: "@mensaje",
+        icon: "@(resultado ? "success" : "error")"
+    });
+    </script>
+}
