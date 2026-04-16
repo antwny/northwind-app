@@ -92,13 +92,13 @@
                 @Html.DisplayFor(modelItem => item.Fax)
             </td>
             <td>
-                <a href="@Url.Action("Detalles","",new {customerId = item.CustomerID})" class="btn btn-sm btn-outline-info" title="Ver">
+                <a href="@Url.Action("Detalles","",new {customerId = item.CustomerID})" class="btn btn-sm btn-outline-info" title="Ver Detalles">
                     <i class="bi bi-eye"></i>
                 </a>
-                <a href="#" class="btn btn-sm btn-outline-warning" title="Editar">
+                <a href="@Url.Action("Editar","Customers",new {customerId = item.CustomerID})" class="btn btn-sm btn-outline-warning" title="Editar">
                     <i class="bi bi-pencil"></i>
                 </a>
-                <a href="@Url.Action("Eliminar","Customers",new {customerId = item.CustomerID})" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                <a href="@Url.Action("Eliminar","Customers",new {customerId = item.CustomerID})" class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(event, this.href)" title="Eliminar">
                     <i class="bi bi-trash"></i>
                 </a>
             </td>
@@ -156,17 +156,23 @@
 
 <p class="text-center text-muted">Total: @ViewBag.TotalRegistros registros</p>
 
-@if (TempData["Ok"] != null)
-{
-    bool resultado = (bool)TempData["Ok"];
-    string titulo = (string)TempData["Titulo"];
-    string mensaje = (string)TempData["Mensaje"];
+<script>
 
-    <script type="text/javascript">
-    Swal.fire({
-        title: "@titulo",
-        text: "@mensaje",
-        icon: "@(resultado ? "success" : "error")"
-    });
-    </script>
-}
+    function confirmarEliminar(evento, url) {
+        evento.preventDefault(); // evitar navegar al enlace directamente
+
+        Swal.fire({
+            title: "¿Estas seguro de eliminar?",
+            showConfirmButton: false,
+            showDenyButton: true,
+            showCancelButton: true,
+            denyButtonText: "Sí, eliminar.",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isDenied) {
+                window.location.href = url;
+            }
+        });
+    }
+</script>
+

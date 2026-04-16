@@ -33,6 +33,10 @@ namespace NorthwindApp.Controllers
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / tamanoPagina);
             ViewBag.TotalRegistros = total;
 
+            ViewBag.Ok = TempData["Ok"];
+            ViewBag.Titulo = TempData["Titulo"];
+            ViewBag.Mensaje = TempData["Mensaje"];
+
             return View(items);
         }
 
@@ -99,6 +103,46 @@ namespace NorthwindApp.Controllers
                 ? "El cliente se elimino correctamente."
                 : "Codigo de error: 104";
             return RedirectToAction("Lista");
+        }
+
+        [HttpGet]
+        public ActionResult Editar(string customerId)
+        {
+            var customer = customersDAO.BuscarPorId(customerId);
+            if (customer == null)
+            {
+                ViewBag.Ok = false;
+                ViewBag.Titulo = "Cliente no encontrado";
+                ViewBag.Mensaje = $"No se encontro el cliente con ID: {customerId}";
+                return RedirectToAction("Lista");
+            }
+
+            return View(customer);
+        }
+
+        [HttpPost]
+        public ActionResult Editar(string customerId, Customers customer)
+        {
+            if (customer == null)
+            {
+                ViewBag.Ok = false;
+                ViewBag.Titulo = "Cliente no encontrado";
+                ViewBag.Mensaje = $"No se encontro el cliente con ID: {customerId}";
+                return RedirectToAction("Lista");
+            }
+            if (!ModelState.IsValid)
+            {
+                // 👈 Regresa a la vista con los errores
+                return View(customer);
+            }
+            bool ok = customersDAO.Actualizar(customer);
+            ViewBag.Ok = ok;
+            ViewBag.Titulo = ok ? "Cliente Actualizado" : "Error al actualizar!";
+            ViewBag.Mensaje = ok
+                ? "El cliente se actualizo correctamente."
+                : "Codigo de error: 105";
+
+            return View(customer);
         }
     }
 }

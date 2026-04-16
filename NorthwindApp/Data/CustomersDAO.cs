@@ -23,7 +23,37 @@ namespace NorthwindApp.Data
 
         public bool Actualizar(Customers entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var cnx = new SqlConnection(cadenaCnx))
+                {
+                    cnx.Open();
+                    string sql =
+                        @"UPDATE Customers SET CompanyName = @CompanyName, ContactName = @ContactName, ContactTitle = @ContactTitle, 
+                        Address = @Address, City = @City, Region = @Region, PostalCode = @PostalCode, Country = @Country, 
+                        Phone = @Phone, Fax = @Fax WHERE CustomerID = @CustomerID";
+                    using (var cmd = new SqlCommand(sql, cnx))
+                    {
+                        cmd.Parameters.AddWithValue("@CustomerID", entity.CustomerID);
+                        cmd.Parameters.AddWithValue("@CompanyName", entity.CompanyName);
+                        cmd.Parameters.AddWithValue("@ContactName", entity.ContactName);
+                        cmd.Parameters.AddWithValue("@ContactTitle", entity.ContactTitle);
+                        cmd.Parameters.AddWithValue("@Address", entity.Address);
+                        cmd.Parameters.AddWithValue("@City", entity.City);
+                        cmd.Parameters.AddWithValue("@Region", entity.Region);
+                        cmd.Parameters.AddWithValue("@PostalCode", entity.PostalCode);
+                        cmd.Parameters.AddWithValue("@Country", entity.Country);
+                        cmd.Parameters.AddWithValue("@Phone", entity.Phone);
+                        cmd.Parameters.AddWithValue("@Fax", entity.Fax);
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                return false;
+                throw new ApplicationException("Error al actualizar datos: " + ex.Message, ex);
+            }
         }
 
         public Customers BuscarPorId(string id)
@@ -93,6 +123,7 @@ namespace NorthwindApp.Data
             }
             catch (SqlException ex)
             {
+                return false;
                 throw new ApplicationException("Error al eliminar datos: " + ex.Message, ex);
             }
         }

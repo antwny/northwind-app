@@ -69,7 +69,7 @@
 
     </dl>
 </div>
-
+<h3>Productos</h3>
 
 <hr />
 <table class="table">
@@ -96,7 +96,7 @@
     }
 </table>
 
-<p>
-    
-    @Html.ActionLink("Regresar a la Lista", "ListaOrders", null, new {@class = "btn btn-secondary"})
-</p>
+<div class="d-flex gap-3 py-3">
+    @Html.ActionLink("Ver Cliente", "Detalles", "Customers", new { customerId = Model.Customers.CustomerID }, new { @class = "btn btn-secondary" })
+    @Html.ActionLink("Regresar a la Lista", "ListaOrders", null, new { @class = "btn btn-secondary" })
+</div>

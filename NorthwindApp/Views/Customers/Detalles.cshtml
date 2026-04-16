@@ -1,7 +1,7 @@
 ﻿@model NorthwindApp.Models.Customers
 
 @{
-    ViewBag.Title = "Detalles";
+    ViewBag.Title = "Detalles - Cliente";
     Layout = "~/Views/Shared/_Main.cshtml";
     var ordersM = ViewBag.Orders;
 }
@@ -104,7 +104,7 @@
     </dl>
 </div>
 
-<h2>Sus Pedidos</h2>
+<h3>Sus Pedidos</h3>
 <hr />
 
 <table class="table">
@@ -130,7 +130,7 @@
             <td>@item.ShipPostalCode</td>
             <td>@item.ShipCountry</td>
             <td>
-                <a href="@Url.Action("DetallesOrders","Orders",new {orderId = item.OrderID})" class="btn btn-sm btn-outline-info" title="Ver">
+                <a href="@Url.Action("DetallesOrders","Orders",new {orderId = item.OrderID})" class="btn btn-sm btn-outline-info" title="Ver Pedido">
                     <i class="bi bi-eye"></i>
                 </a>
             </td>
@@ -138,7 +138,7 @@
     }
 </table>
 
-<p>
-    @Html.ActionLink("Editar", "Editar", new { /* id = Model.PrimaryKey */ }, new { @class = "btn btn-primary" }) 
-    @Html.ActionLink("Regresar a la Lista", "Lista", null, new{@class="btn btn-secondary" })
-</p>
+<div class="d-flex gap-3">
+    @Html.ActionLink("Editar", "Editar", new { customerId = Model.CustomerID }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Regresar a la Lista", "Lista", null, new { @class = "btn btn-secondary" })
+</div>
